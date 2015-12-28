@@ -8,8 +8,9 @@ import (
 	"sync"
 
 	libhttp "github.com/CyberAgent/car-golib/http"
-	"github.com/Jun-Chang/rpc-client/proto"
-	"github.com/Jun-Chang/rpc-client/service"
+	"github.com/Jun-Chang/rpc-server/codec"
+	"github.com/Jun-Chang/rpc-server/proto"
+	"github.com/Jun-Chang/rpc-server/service"
 	msgpackrpc "github.com/msgpack-rpc/msgpack-rpc-go/rpc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -33,7 +34,7 @@ var grpcOnce sync.Once
 
 func grpcH(w http.ResponseWriter, r *http.Request) {
 	grpcOnce.Do(func() {
-		conn, err := grpc.Dial("127.0.0.1:11111", grpc.WithInsecure())
+		conn, err := grpc.Dial("127.0.0.1:11111", grpc.WithInsecure(), grpc.WithCodec(codec.CodecJson{}))
 		if err != nil {
 			panic(err)
 		}
