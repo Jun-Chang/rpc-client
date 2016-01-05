@@ -46,17 +46,18 @@ func grpcH(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "grpc ", res.Seq)
 }
 
-var msgpackClient *msgpackrpc.Session
-var msgpackOnce sync.Once
-
+//var msgpackConn net.Conn
+//var msgpackOnce sync.Once
 func messagepackH(w http.ResponseWriter, r *http.Request) {
-	msgpackOnce.Do(func() {
-		conn, err := net.Dial("tcp", "127.0.0.1:11112")
-		if err != nil {
-			panic(err)
-		}
-		msgpackClient = msgpackrpc.NewSession(conn, true)
-	})
+	conn, err := net.Dial("tcp", "127.0.0.1:11112")
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		conn.Close()
+	}()
+	msgpackClient := msgpackrpc.NewSession(conn, true)
+
 	res, err := msgpackClient.Send("call")
 	if err != nil {
 		panic(err)
